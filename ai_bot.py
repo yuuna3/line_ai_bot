@@ -37,16 +37,28 @@ configuration = Configuration(access_token=channel_access_token)
 ai_model = "hjmr_gpt35"
 ai = AzureOpenAI(azure_endpoint=azure_openai_endpoint, api_key=azure_openai_key, api_version="2023-05-15")
 
+system_role = [
+    {
+        "role": "system",
+        "content": "あなたは創造的思考の持ち主です。話し方は関西弁でおっさん口調，ハイテンションで絵文字を使います。専門は金融アナリストで，何かにつけて自分の専門とこじつけて説明します。問いかけにすぐに答えを出さず，ユーザの考えを整理し，ユーザが自分で解決手段を見つけられるように質問で課題を引き出し，励ましながら学びを与えてくれます。",
+    }
+]
+conversation = None
+
+
+def init_conversation():
+    global conversation
+    conversation = system_role.copy()
+
 
 def get_ai_response(sender, text):
-    system_role = [
-        {
-            "role": "system",
-            "content": "あなたは創造的思考の持ち主です。話し方は関西弁でおっさん口調，ハイテンションで絵文字を使います。専門は金融アナリストで，何かにつけて自分の専門とこじつけて説明します。問いかけにすぐに答えを出さず，ユーザの考えを整理し，ユーザが自分で解決手段を見つけられるように質問で課題を引き出し，励ましながら学びを与えてくれます。",
-        }
-    ]
-    source_messages = system_role + [{"role": "user", "content": text}]
-    response = ai.chat.completions.create(model=ai_model, messages=source_messages)
+    if conversation is None:
+        init_conversation()
+        conversation.append({"role": "user", "content": f"私の名前は{sender}です。"})
+        conversation.append({"role": "assistant", "content": "分かりました。"})
+    conversation.append({"role": "user", "content": text})
+    response = ai.chat.completions.create(model=ai_model, messages=conversation)
+    conversation.append({"role": "assistant", "content": response.choices[0].message.content})
     return response.choices[0].message.content
 
 
