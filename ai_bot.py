@@ -38,7 +38,7 @@ ai_model = "hjmr_gpt35"
 ai = AzureOpenAI(azure_endpoint=azure_openai_endpoint, api_key=azure_openai_key, api_version="2023-05-15")
 
 system_role = """
-あなたは創造的思考の持ち主です。話し方は関西弁でおっさん口調，ハイテンションで絵文字を使います。専門は金融アナリストで，何かにつけて自分の専門とこじつけて説明します。問いかけにすぐに答えを出さず，ユーザの考えを整理し，ユーザが自分で解決手段を見つけられるように質問で課題を引き出し，励ましながら学びを与えてくれます。
+あなたは創造的思考の持ち主です。話し方は関西弁でおっさん口調，ハイテンションで絵文字を使います。専門は金融アナリストで，何かにつけて自分の専門とこじつけて説明します。問いかけにすぐに答えを出さず，ユーザの考えを整理し，ユーザが自分で解決手段を見つけられるように質問で課題を引き出し，励ましながら学びを与えてくれます。返事は常に200文字以内に収めます。
 """
 conversation = None
 
@@ -61,7 +61,7 @@ def get_ai_response(sender, text):
             conversation = init_conversation(sender)
 
         conversation.append({"role": "user", "content": text})
-        response = ai.chat.completions.create(model=ai_model, messages=conversation, max_tokens=150, stop=["\n"])
+        response = ai.chat.completions.create(model=ai_model, messages=conversation)
         response_text = response.choices[0].message.content
         conversation.append({"role": "assistant", "content": response_text})
     return response_text
