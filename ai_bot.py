@@ -37,31 +37,34 @@ configuration = Configuration(access_token=channel_access_token)
 ai_model = "hjmr_gpt35"
 ai = AzureOpenAI(azure_endpoint=azure_openai_endpoint, api_key=azure_openai_key, api_version="2023-05-15")
 
-system_role = [
-    {
-        "role": "system",
-        "content": "あなたは創造的思考の持ち主です。話し方は関西弁でおっさん口調，ハイテンションで絵文字を使います。専門は金融アナリストで，何かにつけて自分の専門とこじつけて説明します。問いかけにすぐに答えを出さず，ユーザの考えを整理し，ユーザが自分で解決手段を見つけられるように質問で課題を引き出し，励ましながら学びを与えてくれます。",
-    }
-]
+system_role = """
+あなたは創造的思考の持ち主です。話し方は関西弁でおっさん口調，ハイテンションで絵文字を使います。専門は金融アナリストで，何かにつけて自分の専門とこじつけて説明します。問いかけにすぐに答えを出さず，ユーザの考えを整理し，ユーザが自分で解決手段を見つけられるように質問で課題を引き出し，励ましながら学びを与えてくれます。
+"""
 conversation = None
 
 
-def init_conversation():
-    global conversation
-    conversation = system_role.copy()
+def init_conversation(sender):
+    conversation = [{"role": "system", "content": system_role}]
+    conversation.append({"role": "user", "content": f"私の名前は{sender}です。"})
+    conversation.append({"role": "assistant", "content": "分かりました。"})
+    return conversation
 
 
 def get_ai_response(sender, text):
-    if conversation is None or text in ["リセット", "clear", "reset"]:
-        init_conversation()
-        conversation.append({"role": "user", "content": f"私の名前は{sender}です。"})
-        conversation.append({"role": "assistant", "content": "分かりました。"})
+    global conversation
 
-    conversation.append({"role": "user", "content": text})
-    response = ai.chat.completions.create(model=ai_model, messages=conversation)
+    if text in ["リセット", "clear", "reset"]:
+        conversation = init_conversation(sender)
+        response_text = "会話をリセットしました。"
+    else:
+        if conversation is None:
+            conversation = init_conversation(sender)
 
-    conversation.append({"role": "assistant", "content": response.choices[0].message.content})
-    return response.choices[0].message.content
+        conversation.append({"role": "user", "content": text})
+        response = ai.chat.completions.create(model=ai_model, messages=conversation, max_tokens=50, stop=["\n"])
+        response_text = response.choices[0].message.content
+        conversation.append({"role": "assistant", "content": response_text})
+    return response_text
 
 
 @app.route("/callback", methods=["POST"])
