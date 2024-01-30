@@ -44,22 +44,21 @@ conversation = None
 
 
 def init_conversation(sender):
-    conversation = [{"role": "system", "content": system_role}]
-    conversation.append({"role": "user", "content": f"私の名前は{sender}です。"})
-    conversation.append({"role": "assistant", "content": "分かりました。"})
-    return conversation
+    conv = [{"role": "system", "content": system_role}]
+    conv.append({"role": "user", "content": f"私の名前は{sender}です。"})
+    conv.append({"role": "assistant", "content": "分かりました。"})
+    return conv
 
 
 def get_ai_response(sender, text):
     global conversation
+    if conversation is None:
+        conversation = init_conversation(sender)
 
     if text in ["リセット", "clear", "reset"]:
         conversation = init_conversation(sender)
         response_text = "会話をリセットしました。"
     else:
-        if conversation is None:
-            conversation = init_conversation(sender)
-
         conversation.append({"role": "user", "content": text})
         response = ai.chat.completions.create(model=ai_model, messages=conversation)
         response_text = response.choices[0].message.content
