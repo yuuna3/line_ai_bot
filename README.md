@@ -1,3 +1,3 @@
-# A Simple Line Bot creating response by using Azure OpenAI
+# A Simple Line Bot with Azure OpenAI
 
 Too simple.
