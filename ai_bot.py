@@ -52,12 +52,14 @@ def init_conversation():
 
 
 def get_ai_response(sender, text):
-    if conversation is None:
+    if conversation is None or text in ["リセット", "clear", "reset"]:
         init_conversation()
         conversation.append({"role": "user", "content": f"私の名前は{sender}です。"})
         conversation.append({"role": "assistant", "content": "分かりました。"})
+
     conversation.append({"role": "user", "content": text})
     response = ai.chat.completions.create(model=ai_model, messages=conversation)
+
     conversation.append({"role": "assistant", "content": response.choices[0].message.content})
     return response.choices[0].message.content
 
