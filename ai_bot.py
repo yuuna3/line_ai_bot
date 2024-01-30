@@ -6,7 +6,7 @@ from flask import Flask, request, abort
 from linebot.v3 import WebhookHandler
 
 from linebot.v3.webhooks import MessageEvent, TextMessageContent, UserSource
-from linebot.v3.messaging import Configuration, ApiClient, MessagingApi, TextMessage
+from linebot.v3.messaging import Configuration, ApiClient, MessagingApi, TextMessage, ReplyMessageRequest
 from linebot.v3.exceptions import InvalidSignatureError
 
 from openai import AzureOpenAI
@@ -77,13 +77,17 @@ def handle_text_message(event):
             profile = line_bot_api.get_profile(event.source.user_id)
             response = get_ai_response(profile.display_name, text)
             line_bot_api.reply_message_with_http_info(
-                reply_token=event.reply_token,
-                messages=[TextMessage(text=response)],
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[TextMessage(text=response)],
+                )
             )
         else:
             line_bot_api.reply_message_with_http_info(
-                reply_token=event.reply_token,
-                messages=[TextMessage(text="Received message: " + text)],
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[TextMessage(text="Received message: " + text)],
+                )
             )
 
 
