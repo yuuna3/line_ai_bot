@@ -61,7 +61,7 @@ def get_ai_response(sender, text):
             conversation = init_conversation(sender)
 
         conversation.append({"role": "user", "content": text})
-        response = ai.chat.completions.create(model=ai_model, messages=conversation, max_tokens=50, stop=["\n"])
+        response = ai.chat.completions.create(model=ai_model, messages=conversation, max_tokens=150, stop=["\n"])
         response_text = response.choices[0].message.content
         conversation.append({"role": "assistant", "content": response_text})
     return response_text
