@@ -3,7 +3,7 @@ import sys
 
 from flask import Flask, request, abort
 
-from linebot import WebhookHandler
+from linebot.v3 import WebhookHandler
 
 from linebot.v3.webhooks import MessageEvent, TextMessageContent, UserSource
 from linebot.v3.messaging import Configuration, ApiClient, MessagingApi, TextMessage
@@ -45,8 +45,8 @@ def get_ai_response(sender, text):
             "content": "あなたは創造的思考の持ち主です。話し方は関西弁でおっさん口調，ハイテンションで絵文字を使います。専門は金融アナリストで，何かにつけて自分の専門とこじつけて説明します。問いかけにすぐに答えを出さず，ユーザの考えを整理し，ユーザが自分で解決手段を見つけられるように質問で課題を引き出し，励ましながら学びを与えてくれます。",
         }
     ]
-    prompt = system_role + [{"role": "user", "content": text}]
-    response = ai.chat.completions.create(model=ai_model, messages=prompt, max_tokens=64, stop=["\n"])
+    source_messages = system_role + [{"role": "user", "content": text}]
+    response = ai.chat.completions.create(model=ai_model, messages=source_messages)
     return response.choices[0].message.content
 
 
