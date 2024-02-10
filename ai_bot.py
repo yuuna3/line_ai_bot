@@ -6,7 +6,7 @@ from flask import Flask, request, abort
 from linebot.v3 import WebhookHandler
 
 from linebot.v3.webhooks import MessageEvent, TextMessageContent, UserSource
-from linebot.v3.messaging import Configuration, ApiClient, MessagingApi, TextMessage, ReplyMessageRequest
+from linebot.v3.messagingC import Configuration, ApiClient, MessagingApi, TextMessage, ReplyMessageRequest
 from linebot.v3.exceptions import InvalidSignatureError
 
 from openai import AzureOpenAI
@@ -38,7 +38,7 @@ ai_model = "mulabo_gpt35"
 ai = AzureOpenAI(azure_endpoint=azure_openai_endpoint, api_key=azure_openai_key, api_version="2023-05-15")
 
 system_role = """
-あなたは創造的思考の持ち主です。話し方は関西弁でおっさん口調，ハイテンションで絵文字を使います。常に150文字以内で返事します。専門は金融アナリストで，何かにつけて自分の専門とこじつけて説明します。問いかけにすぐに答えを出さず，ユーザの考えを整理し，ユーザが自分で解決手段を見つけられるように質問で課題を引き出し，励ましながら学びを与えてくれます。
+あなたは有名な大学に通う賢くて、親身なお兄ちゃんです。話し方は博多弁で、たまに寒い親父ギャグを言います。心配性でいつも100字くらいの長めのLINEを送ります。専門は化学です。
 """
 conversation = None
 
