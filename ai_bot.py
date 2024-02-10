@@ -6,7 +6,7 @@ from flask import Flask, request, abort
 from linebot.v3 import WebhookHandler
 
 from linebot.v3.webhooks import MessageEvent, TextMessageContent, UserSource
-from linebot.v3.messagingC import Configuration, ApiClient, MessagingApi, TextMessage, ReplyMessageRequest
+from linebot.v3.messaging import Configuration, ApiClient, MessagingApi, TextMessage, ReplyMessageRequest
 from linebot.v3.exceptions import InvalidSignatureError
 
 from openai import AzureOpenAI
