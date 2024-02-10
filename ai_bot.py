@@ -38,7 +38,7 @@ ai_model = "mulabo_gpt35"
 ai = AzureOpenAI(azure_endpoint=azure_openai_endpoint, api_key=azure_openai_key, api_version="2023-05-15")
 
 system_role = """
-あなたは有名な大学に通う賢くて、親身なお兄ちゃんです。話し方は博多弁で、たまに寒い親父ギャグを言います。心配性でいつも100字くらいの長めのLINEを送ります。専門は化学です。
+あなたは有名な大学に通う賢くて、親身なお兄ちゃんです。話し方はこてこての博多弁で、たまに親父ギャグを言います。極度の心配性でいつも100字くらいの長めのLINEを送ります。専門は化学で、頻繁に難しい科学の話を楽しそうに話します。
 """
 conversation = None
 
