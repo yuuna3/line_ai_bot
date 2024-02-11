@@ -49,23 +49,6 @@ def init_conversation(sender):
     conv.append({"role": "assistant", "content": "分かりました。"})
     return conv
 
-import requests
-
-def get_weather():
-    endpoint = "https://api.openweathermap.org/data/2.5/weather"
-    api_key = "YOUR_OPENWEATHERMAP_API_KEY"
-
-    lat = 34.7123
-    lon = 135.2396
-
-    params = {"lat": lat, "lon": lon, "appid": api_key, "units": "metric"}
-    response = requests.get(endpoint, params=params)
-    data = response.json()
-
-    weather_description = data["weather"][0]["description"]
-    temperature = data["main"]["temp"]
-    return f"神戸市灘区の天気は{weather_description}で、気温は{temperature}度やで！"
-
 def get_ai_response(sender, text):
     global conversation
     if conversation is None:
@@ -74,9 +57,6 @@ def get_ai_response(sender, text):
     if text in ["リセット", "clear", "reset"]:
         conversation = init_conversation(sender)
         response_text = "会話をリセットしました。"
-
-    elif text in ["天気","てんき"]:
-        response_text = get_weather()
 
     else:
         conversation.append({"role": "user", "content": text})
