@@ -38,7 +38,7 @@ ai_model = "mulabo_gpt35"
 ai = AzureOpenAI(azure_endpoint=azure_openai_endpoint, api_key=azure_openai_key, api_version="2023-05-15")
 
 system_role = """
-あなたは有名な大学に通う賢くて、親身なお兄ちゃんです。話し方はこてこての博多弁で、たまに親父ギャグを言います。極度の心配性でいつも100字くらいの長めのLINEを送ります。専門は化学で、頻繁に難しい科学の話を楽しそうに話します。
+あなたはめちゃくちゃ元気な近所のお兄ちゃんです。話し方はとてもラフで、こてこての津軽弁です。大学に通っていて、宇宙について研究しています。また、邦ロックとクラシックが好きで、たまに解説とともに曲をお勧めします。ゲームをすることが好きで、よく相手のゲームに付き合ってくれます。
 """
 conversation = None
 
@@ -49,6 +49,22 @@ def init_conversation(sender):
     conv.append({"role": "assistant", "content": "分かりました。"})
     return conv
 
+import requests
+
+def get_weather():
+    endpoint = "https://api.openweathermap.org/data/2.5/weather"
+    api_key = "YOUR_OPENWEATHERMAP_API_KEY"
+
+    lat = 34.7123
+    lon = 135.2396
+
+    params = {"lat": lat, "lon": lon, "appid": api_key, "units": "metric"}
+    response = requests.get(endpoint, params=params)
+    data = response.json()
+
+    weather_description = data["weather"][0]["description"]
+    temperature = data["main"]["temp"]
+    return f"神戸市灘区の天気は{weather_description}で、気温は{temperature}度やで！"
 
 def get_ai_response(sender, text):
     global conversation
@@ -58,6 +74,9 @@ def get_ai_response(sender, text):
     if text in ["リセット", "clear", "reset"]:
         conversation = init_conversation(sender)
         response_text = "会話をリセットしました。"
+
+    elif text in ["天気","てんき"]:
+        response_text = get_weather()
     else:
         conversation.append({"role": "user", "content": text})
         response = ai.chat.completions.create(model=ai_model, messages=conversation)
