@@ -52,7 +52,7 @@ def init_conversation(sender):
 import requests
 
 def get_weather():
-    endpoint = "https://api.openweathermap.org/data/2.5/weather/callback"
+    endpoint = "https://api.openweathermap.org/data/2.5/weather"
     api_key = "YOUR_OPENWEATHERMAP_API_KEY"
 
     lat = 34.7123
