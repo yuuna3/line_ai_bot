@@ -77,6 +77,7 @@ def get_ai_response(sender, text):
 
     elif text in ["天気","てんき"]:
         response_text = get_weather()
+
     else:
         conversation.append({"role": "user", "content": text})
         response = ai.chat.completions.create(model=ai_model, messages=conversation)
