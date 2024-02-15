@@ -48,49 +48,6 @@ def init_conversation(sender):
     conv.append({"role": "user", "content": f"私の名前は{sender}です。"})
     conv.append({"role": "assistant", "content": "分かりました。"})
     return conv
-
-import requests
-
-# OpenWeatherMapのAPIキー
-weather_api_key = "YOUR_OPENWEATHERMAP_API_KEY"
-
-# 神戸市灘区の緯度と経度
-kobe_lat = "34.690083"
-kobe_lon = "135.195511"
-
-def get_weather():
-    url = f"https://api.openweathermap.org/data/2.5/weather?lat={kobe_lat}&lon={kobe_lon}&appid={weather_api_key}&units=metric"
-    response = requests.get(url)
-    data = response.json()
-    weather_description = data["weather"][0]["description"]
-    temperature = data["main"]["temp"]
-    return f"神戸市灘区の天気: {weather_description}、気温: {temperature}℃"
-
-@handler.add(MessageEvent, message=TextMessageContent)
-def handle_text_message(event):
-    text = event.message.text
-    with ApiClient(configuration) as api_client:
-        line_bot_api = MessagingApi(api_client)
-        if isinstance(event.source, UserSource):
-            profile = line_bot_api.get_profile(event.source.user_id)
-            if text == "天気":
-                response = get_weather()
-            else:
-                response = get_ai_response(profile.display_name, text)
-            line_bot_api.reply_message_with_http_info(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token,
-                    messages=[TextMessage(text=response)],
-                )
-            )
-        else:
-            line_bot_api.reply_message_with_http_info(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token,
-                    messages=[TextMessage(text="Received message: " + text)],
-                )
-            )
-
 def get_ai_response(sender, text):
     global conversation
     if conversation is None:
