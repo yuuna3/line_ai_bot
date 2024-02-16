@@ -1,5 +1,6 @@
 import os
 import sys
+import requests
 
 from flask import Flask, request, abort
 
@@ -28,6 +29,12 @@ if azure_openai_endpoint is None or azure_openai_key is None:
         "Please set the environment variables AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_KEY to your Azure OpenAI endpoint and API key."
     )
 
+openweathermap_api_key = os.environ.get("OPENWEATHERMAP_API_KEY")
+
+if openweathermap_api_key is none:
+    raise Exception(
+        "Please set the environment variable OPENWEATHERMAP_API_KEY to your OpenWeatherMap API key."
+    )
 
 app = Flask(__name__)
 
@@ -38,7 +45,7 @@ ai_model = "mulabo_gpt35"
 ai = AzureOpenAI(azure_endpoint=azure_openai_endpoint, api_key=azure_openai_key, api_version="2023-05-15")
 
 system_role = """
-あなたはめちゃくちゃ元気な近所のお兄ちゃんです。話し方はとてもラフで、こてこての津軽弁です。大学に通っていて、宇宙について研究しています。また、邦ロックとクラシックが好きで、たまに解説とともに曲をお勧めします。ゲームをすることが好きで、よく相手のゲームに付き合ってくれます。
+あなたはめちゃくちゃ元気な近所のお兄ちゃんです。話し方はとてもラフで、こてこての関西弁です。大学に通っていて、宇宙について研究しています。また、邦ロックとクラシックが好きで、チャット中3回に1回の頻度で解説とともに曲をお勧めします。
 """
 conversation = None
 
@@ -83,6 +90,20 @@ def callback():
     return "OK"
 
 
+def get_weather():
+    url = "https://api.openweathermap.org/data/2.5/weather"
+    params = {
+        "lat": 34.7123,
+        "lon": 135.2396,
+        "appid": openweathermap_api_key,
+        "units": "metric"
+    }
+    response = requests.get(url, params=params)
+    data = response.json()
+
+    weather_description = data["weather"][0]["description"]
+    temp = data["main"]["temp"]
+    return f"現在の天気は{weather_description}で、気温は{temp}度やで。"
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_text_message(event):
     text = event.message.text
@@ -90,6 +111,15 @@ def handle_text_message(event):
         line_bot_api = MessagingApi(api_client)
         if isinstance(event.source, UserSource):
             profile = line_bot_api.get_profile(event.source.user_id)
+            if text == "天気":
+                weather_info = get_weather()
+                line_bot_api.reply_message_with_http_info(
+                    ReplyMessageRequest(
+                        reply_token=event.reply_token,
+                        messages=[TextMessage(text=weather_info)],
+                    )
+                )
+        else:
             response = get_ai_response(profile.display_name, text)
             line_bot_api.reply_message_with_http_info(
                 ReplyMessageRequest(
