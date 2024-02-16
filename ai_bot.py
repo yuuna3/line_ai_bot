@@ -97,14 +97,15 @@ def get_weather():
         "lat": 34.7123,
         "lon": 135.2396,
         "appid": openweathermap_api_key,
-        "units": "metric"
+        "units": "metric",
+        "lang": "ja",
     }
     response = requests.get(url, params=params)
     data = response.json()
 
     weather_description = data["weather"][0]["description"]
     temp = data["main"]["temp"]
-    return f"現在の天気は{weather_description}で、気温は{temp}度やで。"
+    return f"神戸市灘区の今の天気は{weather_description}で、気温は{temp}度やで。"
 
 
 @handler.add(MessageEvent, message=TextMessageContent)
