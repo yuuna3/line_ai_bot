@@ -28,6 +28,7 @@ if azure_openai_endpoint is None or azure_openai_key is None:
     raise Exception(
         "Please set the environment variables AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_KEY to your Azure OpenAI endpoint and API key."
     )
+print(os.getenv("OPENWEATHERMAP_API_KEY"))
 
 openweathermap_api_key = os.getenv("OPENWEATHERMAP_API_KEY")
 
