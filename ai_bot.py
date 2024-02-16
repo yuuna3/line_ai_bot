@@ -90,6 +90,39 @@ def callback():
     return "OK"
 
 
+@handler.add(MessageEvent, message=TextMessageContent)
+def handle_text_message(event):
+    text = event.message.text
+    with ApiClient(configuration) as api_client:
+        line_bot_api = MessagingApi(api_client)
+        if isinstance(event.source, UserSource):
+            profile = line_bot_api.get_profile(event.source.user_id)
+
+            if text == "天気":
+                weather_info = get_weather()
+                line_bot_api.reply_message_with_http_info(
+                    ReplyMessageRequest(
+                        reply_token=event.reply_token,
+                        messages=[TextMessage(text=weather_info)],
+                    )
+                )
+
+        else:
+            response = get_ai_response(profile.display_name, text)
+            line_bot_api.reply_message_with_http_info(
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[TextMessage(text=response)],
+                )
+            )
+
+        else:
+            line_bot_api.reply_message_with_http_info(
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[TextMessage(text="Received message: " + text)],
+                )
+            )
 def get_weather():
     url = "https://api.openweathermap.org/data/2.5/weather"
     params = {
@@ -104,36 +137,6 @@ def get_weather():
     weather_description = data["weather"][0]["description"]
     temp = data["main"]["temp"]
     return f"現在の天気は{weather_description}で、気温は{temp}度やで。"
-@handler.add(MessageEvent, message=TextMessageContent)
-def handle_text_message(event):
-    text = event.message.text
-    with ApiClient(configuration) as api_client:
-        line_bot_api = MessagingApi(api_client)
-        if isinstance(event.source, UserSource):
-            profile = line_bot_api.get_profile(event.source.user_id)
-            if text == "天気":
-                weather_info = get_weather()
-                line_bot_api.reply_message_with_http_info(
-                    ReplyMessageRequest(
-                        reply_token=event.reply_token,
-                        messages=[TextMessage(text=weather_info)],
-                    )
-                )
-        else:
-            response = get_ai_response(profile.display_name, text)
-            line_bot_api.reply_message_with_http_info(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token,
-                    messages=[TextMessage(text=response)],
-                )
-            )
-        else:
-            line_bot_api.reply_message_with_http_info(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token,
-                    messages=[TextMessage(text="Received message: " + text)],
-                )
-            )
 
 
 if __name__ == "__main__":
