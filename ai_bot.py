@@ -123,7 +123,7 @@ def handle_text_message(event):
                     )
                 )
 
-             else:
+            else:
                  response = get_ai_response(profile.display_name, text)
                  line_bot_api.reply_message_with_http_info(
                      ReplyMessageRequest(
