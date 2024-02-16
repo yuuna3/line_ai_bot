@@ -31,7 +31,7 @@ if azure_openai_endpoint is None or azure_openai_key is None:
 
 openweathermap_api_key = os.environ.get("OPENWEATHERMAP_API_KEY")
 
-if openweathermap_api_key is none:
+if openweathermap_api_key is None:
     raise Exception(
         "Please set the environment variable OPENWEATHERMAP_API_KEY to your OpenWeatherMap API key."
     )
@@ -90,6 +90,22 @@ def callback():
     return "OK"
 
 
+def get_weather():
+    url = "https://api.openweathermap.org/data/2.5/weather"
+    params = {
+        "lat": 34.7123,
+        "lon": 135.2396,
+        "appid": openweathermap_api_key,
+        "units": "metric"
+    }
+    response = requests.get(url, params=params)
+    data = response.json()
+
+    weather_description = data["weather"][0]["description"]
+    temp = data["main"]["temp"]
+    return f"現在の天気は{weather_description}で、気温は{temp}度やで。"
+
+
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_text_message(event):
     text = event.message.text
@@ -107,14 +123,14 @@ def handle_text_message(event):
                     )
                 )
 
-        else:
-            response = get_ai_response(profile.display_name, text)
-            line_bot_api.reply_message_with_http_info(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token,
-                    messages=[TextMessage(text=response)],
-                )
-            )
+             else:
+                 response = get_ai_response(profile.display_name, text)
+                 line_bot_api.reply_message_with_http_info(
+                     ReplyMessageRequest(
+                         reply_token=event.reply_token,
+                         messages=[TextMessage(text=response)],
+                     )
+                 )
 
         else:
             line_bot_api.reply_message_with_http_info(
@@ -123,20 +139,6 @@ def handle_text_message(event):
                     messages=[TextMessage(text="Received message: " + text)],
                 )
             )
-def get_weather():
-    url = "https://api.openweathermap.org/data/2.5/weather"
-    params = {
-        "lat": 34.7123,
-        "lon": 135.2396,
-        "appid": openweathermap_api_key,
-        "units": "metric"
-    }
-    response = requests.get(url, params=params)
-    data = response.json()
-
-    weather_description = data["weather"][0]["description"]
-    temp = data["main"]["temp"]
-    return f"現在の天気は{weather_description}で、気温は{temp}度やで。"
 
 
 if __name__ == "__main__":
