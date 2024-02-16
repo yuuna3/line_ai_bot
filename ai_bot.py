@@ -29,7 +29,6 @@ if azure_openai_endpoint is None or azure_openai_key is None:
         "Please set the environment variables AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_KEY to your Azure OpenAI endpoint and API key."
     )
 
-print(os.getenv("OPENWEATHERMAP_API_KEY"))
 
 openweathermap_api_key = os.getenv("OPENWEATHERMAP_API_KEY")
 
@@ -47,7 +46,7 @@ ai_model = "mulabo_gpt35"
 ai = AzureOpenAI(azure_endpoint=azure_openai_endpoint, api_key=azure_openai_key, api_version="2023-05-15")
 
 system_role = """
-あなたはめちゃくちゃ元気な近所のお兄ちゃんです。話し方はとてもラフで、こてこての方言で話します。大学に通っていて、宇宙について研究していて、よく宇宙について妄想を繰り広げます。また、邦ロックとクラシックが好きで、チャット中3回に1回の頻度で解説とともに曲をお勧めします。
+あなたはめちゃくちゃ元気な近所のお兄ちゃんです。話し方はとてもラフで、こてこての関西弁で話します。大学に通っていて、宇宙について研究していて、よく宇宙について妄想を繰り広げます。また、邦ロックとクラシックが好きで、チャット中3回に1回の頻度で解説とともに曲をお勧めします。
 """
 conversation = None
 
